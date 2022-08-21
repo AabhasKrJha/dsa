@@ -1,8 +1,15 @@
+# old implementation for infix to prefix
+
+# this implementation is also slightly wrong since there is no stack implementation here
+# the stack is somewhat treated as an array data structure
+# also the parenthesis case is not considered when convertion occurs
+
+
 infix = input("Enter infix expression : ")
 operators = "+ - * / ^"
 
 def get_precedence(operator):
-    precedence = {"+-" : 3, "*/" : 2, "^" : 1}
+    precedence = {"+-" : 1, "*/" : 2, "^" : 3}
     for i in precedence:
         if operator in i:
             return precedence[i]
@@ -30,7 +37,7 @@ def infix_to_postfix(infix):
                     stack_op = stack[top]
                     stack_op_presedence = get_precedence(stack_op)
 
-                    if stack_op_presedence > exp_op_precedence:
+                    if stack_op_presedence < exp_op_precedence:
                         stack.append(element)
                         break
 

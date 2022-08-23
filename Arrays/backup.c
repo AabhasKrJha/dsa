@@ -66,7 +66,7 @@ int* create_array(int *arr, int arr_size){
 
 // fxn to insert an element in an array at a given position
 int* insert_array_element(int *arr, int arr_size, int element, int insert_index){
-    if (insert_index == arr_size - 1){
+    if (insert_index == arr_size ){
         arr[arr_size] = element;
     } else {
         for (int index = arr_size ; index > insert_index; index--){
@@ -83,7 +83,7 @@ int* insert_array_element(int *arr, int arr_size, int element, int insert_index)
 
 // fxn to delete an element from an array at a given position
 int* delete_array_element(int* arr, int arr_size, int delete_index){
-    for (int index = delete_index; index > arr_size-1; index++){
+    for (int index = delete_index; index < arr_size-1; index++){
         arr[index] = arr[index + 1];
     }
     arr_size-- ;
@@ -256,3 +256,9 @@ int main(){
     return 0;
 
 }  
+
+// changelogs
+
+//[ENTER HERE]
+
+// fixed bugs in insertion and deletion

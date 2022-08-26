@@ -2,10 +2,20 @@
 
 # change logs from the old implementation 
 
-# [22 Aug 2022]
-# 1. Full stack implemenation instead of array
-# 2. Added the parenthesis handling for infix to postfix
-# 3. Plain simple approach to OOP based approached
+"""
+[22 Aug 2022]
+1. Full stack implemenation instead of array
+2. Added the parenthesis handling for infix to postfix
+3. Plain simple approach to OOP based approached
+"""
+
+"""
+[25 Aug 2022]
+1. Added infix to prefix convertion in the driver code
+2. Added test expressions to driver code
+3. Converted single line comments to multiline comments
+4. Changed print statement to return statement for printing converted expression
+"""
 
 
 class Convert:
@@ -108,10 +118,48 @@ class Convert:
         except:
             pass
         
-        print("".join(self.output))
+        return "".join(self.output)
 
 if __name__ == '__main__':
+
+    """
+    test infix expresstions
+    1. ((A+B)-C*(D/E))+F
+    2. a+b*c+d
+    3. a+b*(c^d-e)^(f+g*h)-i
+    """
+
     infix = input("Enter infix expression : ")
     infix_obj = Convert()
-    infix_obj.infix_to_postfix(infix)
- 
+    
+    choise = int(input("Enter 1 for postfix and 2 for prefix :"))
+
+    if choise == 1:
+        # infix to postfix
+        postfix = infix_obj.infix_to_postfix(infix)
+        print(postfix)
+
+    else:
+        # infix to prefix
+
+        # infix to prefix can be done using infix to postfix 
+        # first convert "(" to ")" and ")" to "("
+        # to so do reverse the in fix expression, convert it to postfix and reverese postfix to get prefix
+
+        # replaced by "[" instead of "(" so that all brackets do not become either closing or opening brackets
+        # >>> infix = "(()"
+        # >>> infix.replace("(", ")")
+        # ')))'
+        # >>> infix = infix.replace("(", ")")
+        # >>> infix
+        # ')))'
+        open_brackets = infix.count("(")
+        close_brackes = infix.count(")")
+        infix = infix.replace("(" , "[" , open_brackets) 
+        infix = infix.replace(")" , "]" , close_brackes)
+        infix = infix.replace("[" , ")" , open_brackets) 
+        infix = infix.replace("]" , "(" , close_brackes)
+
+        prefix = infix_obj.infix_to_postfix(infix[::-1])[::-1]
+        print(prefix)
+

@@ -85,14 +85,28 @@ char* infix_to_postfix(){
         // if charector is an operator
         if (isOperator(charector)){
             char infix_op = charector;
+            int infix_op_precedence = get_precedence(infix_op);
             stack_top_op = pop();
-            while (isOperator(stack_top_op) && get_precedence(stack_top_op) >= get_precedence(infix_op)){
-                output[index] = stack_top_op;
-                index++;
+            if (stack_top_op == '\0'){
+                push(infix_op);
+            }
+            while (stack_top_op != '\0'){
+                if (stack_top_op == '('){
+                    push(infix_op);
+                }else{
+                    push(stack_top_op);
+                    int stack_top_op_precedence = get_precedence(stack_top_op);
+                    if (stack_top_op_precedence < infix_op_precedence){
+                        push(infix_op);
+                    } else{
+                        stack_top_op = pop();
+                        output[index] = stack_top_op;
+                        index++;
+
+                    }
+                }
                 stack_top_op = pop();
             }
-            push(stack_top_op);
-            push(infix_op);
         } 
         // if charector is an operand we append it to the output expresssion
         else if(isOperand(charector)){
@@ -120,6 +134,38 @@ char* infix_to_postfix(){
     return output;
 }
 
+char* reverse(char* str){  
+    int len = strlen(str);
+    char temp; 
+    for (int index = 0; index < len/2; index++){  
+        temp = str[index];  
+        str[index] = str[len - index - 1];  
+        str[len - index - 1] = temp;  
+    }
+    return str;
+}
+
+char* replace_brackets(char* str){
+    int len = strlen(str);
+    for(int index = 0; index < len; index++){
+        char charector = str[index];
+        if (charector == '('){
+            str[index] = ')';
+        } else if (charector == ')'){
+            str[index] = '(';
+        }
+    }
+    return str;
+}
+
+char* infix_to_prefix(){
+    char* infix_rev = reverse(infix_expression);
+    infix_rev = replace_brackets(infix_rev);
+    char* prefix_rev = infix_to_postfix();
+    char* prefix = reverse(prefix_rev);
+    return prefix;
+}
+
 // ===== DRIVER CODE =====
 
 int main(){
@@ -136,7 +182,9 @@ int main(){
 
     if (bracets_in_order){
         char* postfix = infix_to_postfix();
-        printf("POSTFIX : %s", postfix);
+        char* prefix = infix_to_prefix();
+        printf("POSTFIX : %s \n", postfix);
+        printf("PREFIX : %s", prefix);
 
     } else{
         printf("INVALID INFIX EXPRESSION");

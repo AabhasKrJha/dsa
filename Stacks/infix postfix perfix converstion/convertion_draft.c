@@ -17,15 +17,27 @@ char operators[5] = "+-*/^";
 
 // ===== STACK OPERATIONS =====
 
-void push(int charector){
-    top++;
-    stack[top] = charector;
+void do_nothing(){}
+
+void push(char charector){
+    if (top >= capacity - 1){
+        printf("stack is overflowing\n");
+        exit(0);
+    }else{
+        top++;             
+        stack[top] = charector;
+    }
 }
 
 char pop(){
-    char charector = stack[top];
-    top--;
-    return charector;
+    char charector;
+    if (top < 0){
+        return '\0'; // underflowing condition
+    }else{
+        charector = stack[top];
+        top = top - 1;
+        return charector;
+    }
 }
 
 // ===== PRESEDENCE CHECKING AND OPERATOR OPERATIONS =====
@@ -74,7 +86,7 @@ bool check_bracket_order(char* infix, int capacity){
     return (brackets_balance == 0) ? true : false;
 }
 
-char* infix_to_postfix(){
+char* infix_to_postfix(char* infix_expression){
 
     int index = 0;
     char stack_top_op;
@@ -89,33 +101,36 @@ char* infix_to_postfix(){
             stack_top_op = pop();
             if (stack_top_op == '\0'){
                 push(infix_op);
-            }
-            while (stack_top_op != '\0'){
-                if (stack_top_op == '('){
-                    push(infix_op);
-                }else{
-                    push(stack_top_op);
-                    int stack_top_op_precedence = get_precedence(stack_top_op);
-                    if (stack_top_op_precedence < infix_op_precedence){
-                        push(infix_op);
-                    } else{
-                        stack_top_op = pop();
-                        output[index] = stack_top_op;
-                        index++;
-
-                    }
+                continue;
+            }else if (stack_top_op == '('){
+                push(stack_top_op);
+                push(infix_op);
+                continue;
+            } else{
+                int stack_top_op_precedence = get_precedence(stack_top_op);
+                while (infix_op_precedence <= stack_top_op_precedence){
+                    output[index] = stack_top_op;
+                    index++;
+                    stack_top_op = pop();
+                    stack_top_op_precedence = get_precedence(stack_top_op);
                 }
-                stack_top_op = pop();
+                if (stack_top_op != '\0'){
+                    push(stack_top_op);
+                }
+                push(infix_op);
+                continue;
             }
         } 
         // if charector is an operand we append it to the output expresssion
         else if(isOperand(charector)){
             output[index] = charector;
             index++;
+            continue;
         } 
         // if charector is an open paranthesis we push it to the stack
         else if (charector == '('){
             push(charector);
+            index++;
         } 
         // if charctor is a closing paranthesis we pop all operators and append it the the output expression till an open paranthesis is encountered
         else if (charector == ')'){
@@ -130,9 +145,13 @@ char* infix_to_postfix(){
     while (stack_top_op != '\0'){
         output[index] = stack_top_op;
         index++;
+        stack_top_op = pop();
     }
+
     return output;
 }
+
+// ===== INFIX CONVERTIONS =====
 
 char* reverse(char* str){  
     int len = strlen(str);
@@ -158,10 +177,10 @@ char* replace_brackets(char* str){
     return str;
 }
 
-char* infix_to_prefix(){
+char* infix_to_prefix(char* infix_expression){
     char* infix_rev = reverse(infix_expression);
     infix_rev = replace_brackets(infix_rev);
-    char* prefix_rev = infix_to_postfix();
+    char* prefix_rev = infix_to_postfix(infix_rev);
     char* prefix = reverse(prefix_rev);
     return prefix;
 }
@@ -181,8 +200,9 @@ int main(){
     bool bracets_in_order = check_bracket_order(infix_expression, capacity);
 
     if (bracets_in_order){
-        char* postfix = infix_to_postfix();
-        char* prefix = infix_to_prefix();
+        printf("VALID INFIX \n");
+        char* postfix = infix_to_postfix(infix_expression);
+        char* prefix = infix_to_prefix(infix_expression);
         printf("POSTFIX : %s \n", postfix);
         printf("PREFIX : %s", prefix);
 
